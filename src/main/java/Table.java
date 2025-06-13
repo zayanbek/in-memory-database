@@ -10,6 +10,8 @@ public class Table {
 
     public Table() {this.name = "";}
 
+    public String getName() { return this.name; }
+
     public void addColumn(Column column) {
         this.columns.add(column);
     }
@@ -19,7 +21,7 @@ public class Table {
     }
 
     public ArrayList<Column> getColumns() {
-        return new ArrayList<Column>(this.columns);
+        return new ArrayList<>(this.columns);
     }
 
     public void insert(Object ... values) {
@@ -52,7 +54,7 @@ public class Table {
     }
 
     public ArrayList<Row> selectAll() {
-        return new ArrayList<Row>(this.rows);
+        return new ArrayList<>(this.rows);
     }
 
     public Table select(String ... columnNames) {
@@ -112,60 +114,108 @@ public class Table {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
 
-        String result = "";
+        int[] widths = getColumnWidths(this.columns, this.rows);
+        int numOfColumns = this.columns.size();
+        int totalWidth = 2 * numOfColumns + sumArray(widths);
+
+
+        String topBar = getBar(totalWidth) + "\n";
+        String caption = "|" + centerPadding(this.name, totalWidth) + "|\n";
+        String midBar = getBar(widths) + "\n";
+
+        String header = getHeaderSection(this.columns, widths);
+        String data = getDataSection(this.columns, this.rows, widths);
+
+        return topBar + caption + midBar + header + midBar + data + midBar;
+
+    }
+
+    private static String getBar(int totalWidth) {
+        return "+" + "-".repeat(totalWidth) + "+";
+    }
+
+    private static String getBar(int[] widths) {
         String bar = "+";
-        int totalWidth = 0;
 
-        int[] widths = new int[columns.size()];
+        for(int width : widths) {
+            bar += "-".repeat(width + 2) + "+";
+        }
+
+        return bar;
+    }
+
+    private static String getHeaderSection(ArrayList<Column> columns, int[] widths) {
+        String header = "";
 
         for(int i = 0; i < columns.size(); i++) {
-            Column col = columns.get(i);
-            int maxWidth = getLength(col.getName()) + 2;
-            for(Row row : rows) {
-                Object value = row.getValue(col.getName());
-                int currentWidth = getLength(value) + 2;
+            header += "|" + leftPadding(columns.get(i).getName(), widths[i]);
+        }
+        return  header + "|\n";
+    }
+
+    private static String getDataSection(ArrayList<Column> columns, ArrayList<Row> rows, int[] widths) {
+        String data = "";
+
+        for(Row row : rows) {
+            String line = "";
+            for(int j = 0; j < widths.length; j++) {
+                String text = row.getValue(columns.get(j).getName()).toString();
+                line += "|" + leftPadding(text, widths[j]);
+            }
+
+            data += line + "|\n";
+        }
+
+        return data;
+    }
+
+    private static int[] getColumnWidths(ArrayList<Column> columns, ArrayList<Row> rows) {
+        int size = columns.size();
+        int[] widths = new int[size];
+
+        for(int i = 0; i < size; i++) {
+
+            Column column = columns.get(i);
+            String columnName = column.getName();
+
+            int maxWidth = columnName.length();
+
+            for(int j = 0; j < rows.size(); j++) {
+
+                Object rowValue = rows.get(j).getValue(columnName);
+                int currentWidth = getLength(rowValue);
 
                 if (currentWidth > maxWidth) maxWidth = currentWidth;
+
             }
+
             widths[i] = maxWidth;
-            totalWidth += maxWidth;
+        }
+        return widths;
+    }
 
-            bar += "-".repeat(widths[i]) + "+";
+    private static int sumArray(int[] numbers) {
+        int sum = 0;
+        for (int num : numbers) sum += num;
+        return sum;
+    }
+
+    private static String centerPadding(String text, int totalWidth) {
+        int availableSpace = totalWidth - text.length();
+
+        if (availableSpace % 2 == 0) {
+            return " ".repeat(availableSpace/2) + text + " ".repeat(availableSpace/2);
+        } else {
+            int left = availableSpace - 1, right = availableSpace + 1;
+            return " ".repeat(left/2) + text + " ".repeat(right/2);
         }
 
-        int count = totalWidth + columns.size() - 1;
+    }
 
-        result += "+" + "-".repeat(count) + "+\n"; // top most bar
-
-        int halved = (int) ((count - getLength(this.name)) / 2);
-
-        result += "|" + " ".repeat(halved) + this.name + " ".repeat(halved) + "|\n";
-
-        result += bar + "\n";
-
-        for(int i = 0; i < columns.size(); i++) {
-            Column col = columns.get(i);
-            result += "| " + col.getName() + " ".repeat(widths[i] - getLength(col.getName()) - 1);
-        }
-
-        result += "|\n" + bar;
-
-        for(int i = 0; i < rows.size(); i++){
-            result += "\n| ";
-            for(int j = 0; j < columns.size(); j++) {
-                String value = rows.get(i).getValue(columns.get(j).getName()).toString();
-                int number = widths[j] - getLength(value) - 1;
-
-                String buffer = " ".repeat(number);
-                result += value + buffer + "| ";
-            }
-        }
-
-        result += "\n" + bar;
-
-        return result;
+    private static String leftPadding(String text, int totalWidth) {
+        return " ".repeat(1) + text + " ".repeat(totalWidth - text.length() - 1);
     }
 
     private static int getLength(Object obj) {
