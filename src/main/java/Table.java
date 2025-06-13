@@ -14,6 +14,14 @@ public class Table {
         this.columns.add(column);
     }
 
+    public void addColumns(ArrayList<Column> columns) {
+        this.columns.addAll(columns);
+    }
+
+    public ArrayList<Column> getColumns() {
+        return new ArrayList<Column>(this.columns);
+    }
+
     public void insert(Object ... values) {
 
         Row newRow = new Row();
@@ -39,8 +47,12 @@ public class Table {
         this.rows.add(newRow);
     }
 
+    public void insert(Row row) {
+        this.rows.add(row);
+    }
+
     public ArrayList<Row> selectAll() {
-        return new ArrayList<Row>(rows);
+        return new ArrayList<Row>(this.rows);
     }
 
     public Table select(String ... columnNames) {
@@ -73,6 +85,23 @@ public class Table {
 
             result.insert(newRow);
 
+        }
+
+        return result;
+    }
+
+    public Table selectDistinct(String ... columnNames) {
+
+        Table selected = this.select(columnNames);
+
+        Table result = new Table();
+
+        result.addColumns(selected.getColumns());
+
+        for(Row row : selected.selectAll()) {
+            if(!result.selectAll().contains(row)) {
+                result.insert(row);
+            }
         }
 
         return result;
