@@ -27,9 +27,12 @@ public class Table {
             Column col = this.columns.get(i);
 
             // check if types match
-            if(!col.getType().isInstance(values[i])){
+
+            boolean typesMatch = col.getType().isInstance(values[i]);
+            if (!typesMatch && values[i] != null) {
                 throw new IllegalArgumentException("Type mismatch for column");
             }
+
             newRow.setValue(col.getName(), values[i]);
         }
 
