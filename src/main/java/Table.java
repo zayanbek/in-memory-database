@@ -8,8 +8,10 @@ public class Table {
 
     public Table(String name) {this.name = name;}
 
-    public void addColumn(String name, Class<?> type) {
-        columns.add(new Column(name, type));
+    public Table() {this.name = "";}
+
+    public void addColumn(Column column) {
+        columns.add(column);
     }
 
     public void insert(Object ... values) {
@@ -32,6 +34,45 @@ public class Table {
         }
 
         rows.add(newRow);
+    }
+
+    public ArrayList<Row> selectAll() {
+        return new ArrayList<Row>(rows);
+    }
+
+    public Table select(String ... columnNames) {
+        Table result = new Table();
+        int numberOfColumns = columnNames.length;
+
+        // Add all columns that have a name in columnNames
+        for (String columnName : columnNames) {
+
+            for (Column column : columns) {
+
+                if (column.getName().equals(columnName)) {
+                    result.addColumn(column);
+                }
+
+            }
+
+        }
+
+        // Add rows
+        for(Row row : rows) {
+
+            Object[] newRow = new Object[numberOfColumns];
+
+            for(int i = 0; i < numberOfColumns; i++) {
+
+                newRow[i] = row.getValue(columnNames[i]);
+
+            }
+
+            result.insert(newRow);
+
+        }
+
+        return result;
     }
 
     @Override
