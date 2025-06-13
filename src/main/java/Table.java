@@ -11,20 +11,20 @@ public class Table {
     public Table() {this.name = "";}
 
     public void addColumn(Column column) {
-        columns.add(column);
+        this.columns.add(column);
     }
 
     public void insert(Object ... values) {
 
         Row newRow = new Row();
 
-        if (values.length != columns.size()) {
+        if (values.length != this.columns.size()) {
             throw new IllegalArgumentException("Column count mismatch");
         }
 
         // loop through values
         for(int i = 0; i < values.length; i++) {
-            Column col = columns.get(i);
+            Column col = this.columns.get(i);
 
             // check if types match
             if(!col.getType().isInstance(values[i])){
@@ -33,7 +33,7 @@ public class Table {
             newRow.setValue(col.getName(), values[i]);
         }
 
-        rows.add(newRow);
+        this.rows.add(newRow);
     }
 
     public ArrayList<Row> selectAll() {
@@ -47,7 +47,7 @@ public class Table {
         // Add all columns that have a name in columnNames
         for (String columnName : columnNames) {
 
-            for (Column column : columns) {
+            for (Column column : this.columns) {
 
                 if (column.getName().equals(columnName)) {
                     result.addColumn(column);
@@ -58,7 +58,7 @@ public class Table {
         }
 
         // Add rows
-        for(Row row : rows) {
+        for(Row row : this.rows) {
 
             Object[] newRow = new Object[numberOfColumns];
 
@@ -73,6 +73,10 @@ public class Table {
         }
 
         return result;
+    }
+
+    public void deleteAll() {
+        this.rows.clear();
     }
 
     @Override
