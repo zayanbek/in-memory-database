@@ -131,7 +131,7 @@ public class Table {
         String header = getHeaderSection(this.columns, widths);
         String data = getDataSection(this.columns, this.rows, widths);
 
-        if (this.name == "") {
+        if (this.name.isEmpty()) {
             return midBar + "\n" + header + midBar + "\n" + data + midBar;
         } else {
             return topBar + caption + midBar + "\n" + header + midBar + "\n" + data + midBar;
@@ -145,38 +145,42 @@ public class Table {
     }
 
     private static String getBar(int[] widths) {
-        String bar = "+";
+        StringBuilder bar = new StringBuilder("+");
 
         for(int width : widths) {
-            bar += "-".repeat(width + 2) + "+";
+            bar.append("-".repeat(width + 2));
+            bar.append("+");
         }
 
-        return bar;
+        return bar.toString();
     }
 
     private static String getHeaderSection(ArrayList<Column> columns, int[] widths) {
-        String header = "";
+        StringBuilder header = new StringBuilder();
 
         for(int i = 0; i < columns.size(); i++) {
-            header += "|" + leftPadding(columns.get(i).getName(), widths[i]);
+            header.append("|");
+            header.append(leftPadding(columns.get(i).getName(), widths[i]));
         }
-        return  header + "|\n";
+        return  header.append("|\n").toString();
     }
 
     private static String getDataSection(ArrayList<Column> columns, ArrayList<Row> rows, int[] widths) {
-        String data = "";
+        StringBuilder data = new StringBuilder();
 
         for(Row row : rows) {
-            String line = "";
+            StringBuilder line = new StringBuilder();
             for(int j = 0; j < widths.length; j++) {
-                String text = row.getValue(columns.get(j).getName()).toString();
-                line += "|" + leftPadding(text, widths[j]);
+                Object value = row.getValue(columns.get(j).getName());
+                line.append("|");
+                line.append(leftPadding(value.toString(), widths[j]));
             }
 
-            data += line + "|\n";
+            data.append(line);
+            data.append("\n");
         }
 
-        return data;
+        return data.toString();
     }
 
     private static int[] getColumnWidths(ArrayList<Column> columns, ArrayList<Row> rows) {
@@ -190,13 +194,12 @@ public class Table {
 
             int maxWidth = columnName.length();
 
-            for(int j = 0; j < rows.size(); j++) {
 
-                Object rowValue = rows.get(j).getValue(columnName);
+            for(Row row: rows) {
+                Object rowValue = row.getValue(columnName);
                 int currentWidth = getLength(rowValue);
 
                 if (currentWidth > maxWidth) maxWidth = currentWidth;
-
             }
 
             widths[i] = maxWidth;
