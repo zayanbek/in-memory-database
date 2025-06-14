@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.*;
 
 public class Table {
 
@@ -62,35 +62,17 @@ public class Table {
     }
 
     public Table select(String ... columnNames) {
+        Map<String, Column> columnMap = new HashMap<>();
+        for (Column column : this.columns) columnMap.put(column.getName(), column);
+
         Table result = new Table();
-        int numberOfColumns = columnNames.length;
+        for (String columnName : columnNames)
+            if (columnMap.containsKey(columnName)) result.addColumn(columnMap.get(columnName));
 
-        // Add all columns that have a name in columnNames
-        for (String columnName : columnNames) {
-
-            for (Column column : this.columns) {
-
-                if (column.getName().equals(columnName)) {
-                    result.addColumn(column);
-                }
-
-            }
-
-        }
-
-        // Add rows
-        for(Row row : this.rows) {
-
-            Object[] newRow = new Object[numberOfColumns];
-
-            for(int i = 0; i < numberOfColumns; i++) {
-
-                newRow[i] = row.getValue(columnNames[i]);
-
-            }
-
+        for (Row row : this.rows) {
+            Object[] newRow = new Object[columnNames.length];
+            for (int i = 0; i < columnNames.length; i++) newRow[i] = row.getValue(columnNames[i]);
             result.insert(newRow);
-
         }
 
         return result;
@@ -177,7 +159,7 @@ public class Table {
             }
 
             data.append(line);
-            data.append("\n");
+            data.append("|\n");
         }
 
         return data.toString();
