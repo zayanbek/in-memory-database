@@ -85,8 +85,6 @@ class TableTest {
                 | 32  | steve |
                 +-----+-------+""";
 
-        System.out.println(newTable);
-
         assertEquals(expected,newTable.toString());
     }
 
@@ -104,9 +102,6 @@ class TableTest {
         users.insert(4, "steve", 32);
 
         Table newTable = users.selectDistinct("age");
-
-        System.out.println(users);
-        System.out.println(newTable);
 
         String expected = """
                 +-----+
@@ -134,9 +129,6 @@ class TableTest {
         users.insert(4, "steve", 32);
 
         Table newTable = users.selectDistinct("name","age");
-
-        System.out.println(users);
-        System.out.println(newTable);
 
         String expected = """
                 +-------+-----+
@@ -166,9 +158,6 @@ class TableTest {
 
         Table newTable = users.selectDistinct("age","name");
 
-        System.out.println(users);
-        System.out.println(newTable);
-
         String expected = """
                 +-----+-------+
                 | age | name  |
@@ -196,8 +185,6 @@ class TableTest {
         users.insert(4, "steve", 32);
 
         users.deleteAll();
-
-
 
         String expected = """
                 +-----------------+
