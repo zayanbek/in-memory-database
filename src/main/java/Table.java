@@ -12,6 +12,10 @@ public class Table {
 
     public String getName() { return this.name; }
 
+    public void addColumn(String name, Class<?> type) {
+        this.columns.add(new Column(name, type));
+    }
+
     public void addColumn(Column column) {
         this.columns.add(column);
     }
@@ -53,7 +57,7 @@ public class Table {
         this.rows.add(row);
     }
 
-    public ArrayList<Row> selectAll() {
+    public ArrayList<Row> select() {
         return new ArrayList<>(this.rows);
     }
 
@@ -93,15 +97,14 @@ public class Table {
     }
 
     public Table selectDistinct(String ... columnNames) {
-
         Table selected = this.select(columnNames);
 
         Table result = new Table();
 
         result.addColumns(selected.getColumns());
 
-        for(Row row : selected.selectAll()) {
-            if(!result.selectAll().contains(row)) {
+        for(Row row : selected.select()) {
+            if(!result.select().contains(row)) {
                 result.insert(row);
             }
         }
@@ -117,18 +120,23 @@ public class Table {
     public String toString() {
 
         int[] widths = getColumnWidths(this.columns, this.rows);
-        int numOfColumns = this.columns.size();
-        int totalWidth = 2 * numOfColumns + sumArray(widths);
+        int numOfColumns = this.columns.size() + 1;
+        int totalWidth = (2 * numOfColumns) + sumArray(widths);
 
 
         String topBar = getBar(totalWidth) + "\n";
         String caption = "|" + centerPadding(this.name, totalWidth) + "|\n";
-        String midBar = getBar(widths) + "\n";
+        String midBar = getBar(widths);
 
         String header = getHeaderSection(this.columns, widths);
         String data = getDataSection(this.columns, this.rows, widths);
 
-        return topBar + caption + midBar + header + midBar + data + midBar;
+        if (this.name == "") {
+            return midBar + "\n" + header + midBar + "\n" + data + midBar;
+        } else {
+            return topBar + caption + midBar + "\n" + header + midBar + "\n" + data + midBar;
+        }
+
 
     }
 
@@ -215,7 +223,7 @@ public class Table {
     }
 
     private static String leftPadding(String text, int totalWidth) {
-        return " ".repeat(1) + text + " ".repeat(totalWidth - text.length() - 1);
+        return " " + text + " ".repeat(totalWidth - text.length() + 1);
     }
 
     private static int getLength(Object obj) {
