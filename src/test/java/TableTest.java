@@ -181,4 +181,32 @@ class TableTest {
 
         assertEquals(expected, newTable.toString());
     }
+
+    @Test
+    void deleteAllTest() {
+        Table users = new Table("users");
+
+        users.addColumn("id", Integer.class);
+        users.addColumn("name", String.class);
+        users.addColumn("age", Integer.class);
+
+        users.insert(1, "alice", 24);
+        users.insert(2, "bob", 19);
+        users.insert(3, "john", 24);
+        users.insert(4, "steve", 32);
+
+        users.deleteAll();
+
+
+
+        String expected = """
+                +-----------------+
+                |      users      |
+                +----+------+-----+
+                | id | name | age |
+                +----+------+-----+
+                +----+------+-----+""";
+
+        assertEquals(expected, users.toString());
+    }
 }
