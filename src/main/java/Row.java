@@ -18,4 +18,13 @@ public class Row {
         return this.data;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true; // same object
+        if (obj == null || getClass() != obj.getClass()) return false; // null or wrong type
+
+        Row other = (Row) obj;
+        return this.data.equals(other.getValues()); // compare map contents
+    }
+
 }
