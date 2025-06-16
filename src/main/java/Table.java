@@ -133,9 +133,25 @@ public class Table {
         return result;
     }
 
+    public Table selectWhere(Predicate<Row> condition, String ... columnNames) {
+        Table selected = this.select(columnNames);
+
+        Table result = new Table();
+
+        result.addColumns(selected.getColumns());
+
+        for(Row row : this.rows) {
+            if (condition.test(row)) {
+                result.insert(row);
+            }
+        }
+
+        return result;
+    }
+
     // Update
 
-    public void update(HashMap<String, Object> changes, Predicate<Row> condition) {
+    public void update(Predicate<Row> condition, HashMap<String, Object> changes) {
         for (Row row : this.rows) {
             if(condition.test(row)) {
                 for(Column column : this.columns) {
@@ -147,10 +163,14 @@ public class Table {
     }
 
     public void update(HashMap<String, Object> changes) {
-        this.update(changes, row -> true);
+        this.update(row -> true, changes);
     }
 
     // Delete
+
+    public void deleteWhere(Predicate<Row> condition) {
+        this.rows.removeIf(condition);
+    }
 
     public void deleteAll() {
         this.rows.clear();
