@@ -1,16 +1,30 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.Predicate;
 
 public class Table {
+
+    // Member variables
 
     private String name;
     private ArrayList<Column> columns = new ArrayList<>();
     private ArrayList<Row> rows = new ArrayList<>();
 
+    // Constructors
+
     public Table(String name) {this.name = name;}
 
     public Table() {this.name = "";}
 
+    // Getter
+
     public String getName() { return this.name; }
+
+    public ArrayList<Column> getColumns() {
+        return new ArrayList<>(this.columns);
+    }
+
+    // Columns
 
     public void addColumn(String name, Class<?> type) {
         this.columns.add(new Column(name, type));
@@ -24,9 +38,8 @@ public class Table {
         this.columns.addAll(columns);
     }
 
-    public ArrayList<Column> getColumns() {
-        return new ArrayList<>(this.columns);
-    }
+
+    // Insert
 
     public void insert(Object ... values) {
 
@@ -56,6 +69,8 @@ public class Table {
     public void insert(Row row) {
         this.rows.add(row);
     }
+
+    // Select
 
     public ArrayList<Row> selectAll() {
         return new ArrayList<>(this.rows);
@@ -118,6 +133,25 @@ public class Table {
         return result;
     }
 
+    // Update
+
+    public void update(HashMap<String, Object> changes, Predicate<Row> condition) {
+        for (Row row : this.rows) {
+            if(condition.test(row)) {
+                for(Column column : this.columns) {
+                    String columnName = column.getName();
+                    if (changes.containsKey(columnName)) row.setValue(columnName, changes.get(columnName));
+                }
+            }
+        }
+    }
+
+    public void update(HashMap<String, Object> changes) {
+        this.update(changes, row -> true);
+    }
+
+    // Delete
+
     public void deleteAll() {
         this.rows.clear();
     }
@@ -125,6 +159,8 @@ public class Table {
     public boolean isEmpty() {
         return (this.columns.isEmpty() && this.rows.isEmpty());
     }
+
+    // To String
 
     @Override
     public String toString() {
