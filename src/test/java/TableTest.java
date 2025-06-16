@@ -5,6 +5,45 @@ import static org.junit.jupiter.api.Assertions.*;
 class TableTest {
 
     @Test
+    void selectInvalidColumnParameterThrowsException() {
+        Table users = new Table("users");
+
+        users.addColumn("id", Integer.class);
+        users.addColumn("name", String.class);
+        users.addColumn("age", Integer.class);
+
+        users.insert(1, "alice", 24);
+        users.insert(2, "bob", 19);
+        users.insert(3, "john", 24);
+        users.insert(4, "steve", 32);
+
+
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            Table newTable = users.select("id", "email");
+        });
+
+    }
+
+    @Test
+    void selectNoParameters() {
+        Table users = new Table("users");
+
+        users.addColumn("id", Integer.class);
+        users.addColumn("name", String.class);
+        users.addColumn("age", Integer.class);
+
+        users.insert(1, "alice", 24);
+        users.insert(2, "bob", 19);
+        users.insert(3, "john", 24);
+        users.insert(4, "steve", 32);
+
+        Table newTable = users.select();
+
+        System.out.println(newTable);
+    }
+
+    @Test
     void selectSingularColumn() {
         Table users = new Table("users");
 
@@ -196,4 +235,5 @@ class TableTest {
 
         assertEquals(expected, users.toString());
     }
+
 }
