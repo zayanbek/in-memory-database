@@ -21,7 +21,7 @@ public class Row {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true; // same object
-        if (obj == null || getClass() != obj.getClass()) return false; // null or wrong type
+        if (obj == null || !(obj instanceof Row)) return false; // null or wrong type
 
         Row other = (Row) obj;
         return this.data.equals(other.getValues()); // compare map contents
