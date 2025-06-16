@@ -57,22 +57,46 @@ public class Table {
         this.rows.add(row);
     }
 
-    public ArrayList<Row> select() {
+    public ArrayList<Row> selectAll() {
         return new ArrayList<>(this.rows);
     }
 
     public Table select(String ... columnNames) {
-        Map<String, Column> columnMap = new HashMap<>();
-        for (Column column : this.columns) columnMap.put(column.getName(), column);
-
         Table result = new Table();
-        for (String columnName : columnNames)
-            if (columnMap.containsKey(columnName)) result.addColumn(columnMap.get(columnName));
+        int numberOfColumns = columnNames.length;
 
-        for (Row row : this.rows) {
-            Object[] newRow = new Object[columnNames.length];
-            for (int i = 0; i < columnNames.length; i++) newRow[i] = row.getValue(columnNames[i]);
+        // Add all columns that have a name in columnNames
+        for (String columnName : columnNames) {
+            boolean found = false;
+
+            for (Column column : this.columns) {
+
+                if (column.getName().equals(columnName)) {
+                    result.addColumn(column);
+                    found = true;
+                }
+
+            }
+
+            if (found == false) {
+                throw new IllegalArgumentException("Column not found");
+            }
+
+        }
+
+        // Add rows
+        for(Row row : this.rows) {
+
+            Object[] newRow = new Object[numberOfColumns];
+
+            for(int i = 0; i < numberOfColumns; i++) {
+
+                newRow[i] = row.getValue(columnNames[i]);
+
+            }
+
             result.insert(newRow);
+
         }
 
         return result;
@@ -85,8 +109,8 @@ public class Table {
 
         result.addColumns(selected.getColumns());
 
-        for(Row row : selected.select()) {
-            if(!result.select().contains(row)) {
+        for(Row row : selected.selectAll()) {
+            if(!result.selectAll().contains(row)) {
                 result.insert(row);
             }
         }
@@ -98,27 +122,35 @@ public class Table {
         this.rows.clear();
     }
 
+    public boolean isEmpty() {
+        return (this.columns.isEmpty() && this.rows.isEmpty());
+    }
+
     @Override
     public String toString() {
 
-        int[] widths = getColumnWidths(this.columns, this.rows);
-        int numOfColumns = this.columns.size() + 1;
-        int totalWidth = (2 * numOfColumns) + sumArray(widths);
+        if (!this.isEmpty()) {
+            int[] widths = getColumnWidths(this.columns, this.rows);
+            int numOfColumns = this.columns.size() + 1;
+            int totalWidth = (2 * numOfColumns) + sumArray(widths);
 
 
-        String topBar = getBar(totalWidth) + "\n";
-        String caption = "|" + centerPadding(this.name, totalWidth) + "|\n";
-        String midBar = getBar(widths);
+            String topBar = getBar(totalWidth) + "\n";
+            String caption = "|" + centerPadding(this.name, totalWidth) + "|\n";
+            String midBar = getBar(widths);
 
-        String header = getHeaderSection(this.columns, widths);
-        String data = getDataSection(this.columns, this.rows, widths);
+            String header = getHeaderSection(this.columns, widths);
+            String data = getDataSection(this.columns, this.rows, widths);
 
-        if (this.name.isEmpty()) {
-            return midBar + "\n" + header + midBar + "\n" + data + midBar;
-        } else {
-            return topBar + caption + midBar + "\n" + header + midBar + "\n" + data + midBar;
+            if (!this.name.isEmpty()) {
+                return topBar + caption + midBar + "\n" + header + midBar + "\n" + data + midBar;
+            } else {
+                return midBar + "\n" + header + midBar + "\n" + data + midBar;
+            }
+
         }
 
+        return "";
 
     }
 
