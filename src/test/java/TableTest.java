@@ -1,64 +1,68 @@
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test ;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class TableTest {
 
-    @Test
-    void selectInvalidColumnParameterThrowsException() {
-        Table users = new Table("users");
+    @Nested
+    class selectTest {
 
-        users.addColumn("id", Integer.class);
-        users.addColumn("name", String.class);
-        users.addColumn("age", Integer.class);
+        @Test
+        void selectInvalidColumnParameterThrowsException() {
+            Table users = new Table("users");
 
-        users.insert(1, "alice", 24);
-        users.insert(2, "bob", 19);
-        users.insert(3, "john", 24);
-        users.insert(4, "steve", 32);
+            users.addColumn("id", Integer.class);
+            users.addColumn("name", String.class);
+            users.addColumn("age", Integer.class);
+
+            users.insert(1, "alice", 24);
+            users.insert(2, "bob", 19);
+            users.insert(3, "john", 24);
+            users.insert(4, "steve", 32);
 
 
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            Table newTable = users.select("id", "email");
-        });
+            assertThrows(IllegalArgumentException.class, () -> {
+                Table newTable = users.select("id", "email");
+            });
 
-    }
+        }
 
-    @Test
-    void selectNoParameters() {
-        Table users = new Table("users");
+        @Test
+        void selectNoParameters() {
+            Table users = new Table("users");
 
-        users.addColumn("id", Integer.class);
-        users.addColumn("name", String.class);
-        users.addColumn("age", Integer.class);
+            users.addColumn("id", Integer.class);
+            users.addColumn("name", String.class);
+            users.addColumn("age", Integer.class);
 
-        users.insert(1, "alice", 24);
-        users.insert(2, "bob", 19);
-        users.insert(3, "john", 24);
-        users.insert(4, "steve", 32);
+            users.insert(1, "alice", 24);
+            users.insert(2, "bob", 19);
+            users.insert(3, "john", 24);
+            users.insert(4, "steve", 32);
 
-        Table newTable = users.select();
+            Table newTable = users.select();
 
-        System.out.println(newTable);
-    }
+            System.out.println(newTable);
+        }
 
-    @Test
-    void selectSingularColumn() {
-        Table users = new Table("users");
+        @Test
+        void selectSingularColumn() {
+            Table users = new Table("users");
 
-        users.addColumn("id", Integer.class);
-        users.addColumn("name", String.class);
-        users.addColumn("age", Integer.class);
+            users.addColumn("id", Integer.class);
+            users.addColumn("name", String.class);
+            users.addColumn("age", Integer.class);
 
-        users.insert(1, "alice", 24);
-        users.insert(2, "bob", 19);
-        users.insert(3, "john", 24);
-        users.insert(4, "steve", 32);
+            users.insert(1, "alice", 24);
+            users.insert(2, "bob", 19);
+            users.insert(3, "john", 24);
+            users.insert(4, "steve", 32);
 
-        Table newTable = users.select("id");
+            Table newTable = users.select("id");
 
-        String expected = """
+            String expected = """
                +----+
                | id |
                +----+
@@ -68,25 +72,25 @@ class TableTest {
                | 4  |
                +----+""";
 
-        assertEquals(expected, newTable.toString());
-    }
+            assertEquals(expected, newTable.toString());
+        }
 
-    @Test
-    void selectPluralColumns() {
-        Table users = new Table("users");
+        @Test
+        void selectPluralColumns() {
+            Table users = new Table("users");
 
-        users.addColumn("id", Integer.class);
-        users.addColumn("name", String.class);
-        users.addColumn("age", Integer.class);
+            users.addColumn("id", Integer.class);
+            users.addColumn("name", String.class);
+            users.addColumn("age", Integer.class);
 
-        users.insert(1, "alice", 24);
-        users.insert(2, "bob", 19);
-        users.insert(3, "john", 24);
-        users.insert(4, "steve", 32);
+            users.insert(1, "alice", 24);
+            users.insert(2, "bob", 19);
+            users.insert(3, "john", 24);
+            users.insert(4, "steve", 32);
 
-        Table newTable = users.select("name", "age");
+            Table newTable = users.select("name", "age");
 
-        String expected = """
+            String expected = """
                 +-------+-----+
                 | name  | age |
                 +-------+-----+
@@ -96,25 +100,25 @@ class TableTest {
                 | steve | 32  |
                 +-------+-----+""";
 
-        assertEquals(expected,newTable.toString());
-    }
+            assertEquals(expected,newTable.toString());
+        }
 
-    @Test
-    void selectPluralAndReverseColumns() {
-        Table users = new Table("users");
+        @Test
+        void selectPluralAndReverseColumns() {
+            Table users = new Table("users");
 
-        users.addColumn("id", Integer.class);
-        users.addColumn("name", String.class);
-        users.addColumn("age", Integer.class);
+            users.addColumn("id", Integer.class);
+            users.addColumn("name", String.class);
+            users.addColumn("age", Integer.class);
 
-        users.insert(1, "alice", 24);
-        users.insert(2, "bob", 19);
-        users.insert(3, "john", 24);
-        users.insert(4, "steve", 32);
+            users.insert(1, "alice", 24);
+            users.insert(2, "bob", 19);
+            users.insert(3, "john", 24);
+            users.insert(4, "steve", 32);
 
-        Table newTable = users.select("age", "name");
+            Table newTable = users.select("age", "name");
 
-        String expected = """
+            String expected = """
                 +-----+-------+
                 | age | name  |
                 +-----+-------+
@@ -124,25 +128,30 @@ class TableTest {
                 | 32  | steve |
                 +-----+-------+""";
 
-        assertEquals(expected,newTable.toString());
+            assertEquals(expected,newTable.toString());
+        }
+
     }
 
-    @Test
-    void selectDistinctSingularColumn() {
-        Table users = new Table("users");
+    @Nested
+    class selectDistinctTest {
 
-        users.addColumn("id", Integer.class);
-        users.addColumn("name", String.class);
-        users.addColumn("age", Integer.class);
+        @Test
+        void selectDistinctSingularColumn() {
+            Table users = new Table("users");
 
-        users.insert(1, "alice", 24);
-        users.insert(2, "bob", 19);
-        users.insert(3, "john", 24);
-        users.insert(4, "steve", 32);
+            users.addColumn("id", Integer.class);
+            users.addColumn("name", String.class);
+            users.addColumn("age", Integer.class);
 
-        Table newTable = users.selectDistinct("age");
+            users.insert(1, "alice", 24);
+            users.insert(2, "bob", 19);
+            users.insert(3, "john", 24);
+            users.insert(4, "steve", 32);
 
-        String expected = """
+            Table newTable = users.selectDistinct("age");
+
+            String expected = """
                 +-----+
                 | age |
                 +-----+
@@ -151,25 +160,25 @@ class TableTest {
                 | 32  |
                 +-----+""";
 
-        assertEquals(expected, newTable.toString());
-    }
+            assertEquals(expected, newTable.toString());
+        }
 
-    @Test
-    void selectDistinctPluralColumns() {
-        Table users = new Table("users");
+        @Test
+        void selectDistinctPluralColumns() {
+            Table users = new Table("users");
 
-        users.addColumn("id", Integer.class);
-        users.addColumn("name", String.class);
-        users.addColumn("age", Integer.class);
+            users.addColumn("id", Integer.class);
+            users.addColumn("name", String.class);
+            users.addColumn("age", Integer.class);
 
-        users.insert(1, "alice", 24);
-        users.insert(2, "bob", 19);
-        users.insert(3, "john", 24);
-        users.insert(4, "steve", 32);
+            users.insert(1, "alice", 24);
+            users.insert(2, "bob", 19);
+            users.insert(3, "john", 24);
+            users.insert(4, "steve", 32);
 
-        Table newTable = users.selectDistinct("name","age");
+            Table newTable = users.selectDistinct("name","age");
 
-        String expected = """
+            String expected = """
                 +-------+-----+
                 | name  | age |
                 +-------+-----+
@@ -179,25 +188,25 @@ class TableTest {
                 | steve | 32  |
                 +-------+-----+""";
 
-        assertEquals(expected, newTable.toString());
-    }
+            assertEquals(expected, newTable.toString());
+        }
 
-    @Test
-    void selectDistinctPluralAndReverseColumns() {
-        Table users = new Table("users");
+        @Test
+        void selectDistinctPluralAndReverseColumns() {
+            Table users = new Table("users");
 
-        users.addColumn("id", Integer.class);
-        users.addColumn("name", String.class);
-        users.addColumn("age", Integer.class);
+            users.addColumn("id", Integer.class);
+            users.addColumn("name", String.class);
+            users.addColumn("age", Integer.class);
 
-        users.insert(1, "alice", 24);
-        users.insert(2, "bob", 19);
-        users.insert(3, "john", 24);
-        users.insert(4, "steve", 32);
+            users.insert(1, "alice", 24);
+            users.insert(2, "bob", 19);
+            users.insert(3, "john", 24);
+            users.insert(4, "steve", 32);
 
-        Table newTable = users.selectDistinct("age","name");
+            Table newTable = users.selectDistinct("age","name");
 
-        String expected = """
+            String expected = """
                 +-----+-------+
                 | age | name  |
                 +-----+-------+
@@ -207,9 +216,10 @@ class TableTest {
                 | 32  | steve |
                 +-----+-------+""";
 
-        assertEquals(expected, newTable.toString());
-    }
+            assertEquals(expected, newTable.toString());
+        }
 
+    }
     @Test
     void deleteAllTest() {
         Table users = new Table("users");
