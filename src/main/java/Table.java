@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class Table {
@@ -37,7 +38,6 @@ public class Table {
     public void addColumns(ArrayList<Column> columns) {
         this.columns.addAll(columns);
     }
-
 
     // Insert
 
@@ -93,7 +93,7 @@ public class Table {
 
             }
 
-            if (found == false) {
+            if (!found) {
                 throw new IllegalArgumentException("Column not found");
             }
 
@@ -134,17 +134,11 @@ public class Table {
     }
 
     public Table selectWhere(Predicate<Row> condition, String ... columnNames) {
-        Table selected = this.select(columnNames);
-
         Table result = new Table();
 
-        result.addColumns(selected.getColumns());
+        result.addColumns(this.select(columnNames).getColumns());
 
-        for(Row row : this.rows) {
-            if (condition.test(row)) {
-                result.insert(row);
-            }
-        }
+        for(int index : getIndicesOfRowsWhere(condition)) result.insert(this.rows.get(index));
 
         return result;
     }
@@ -152,14 +146,14 @@ public class Table {
     // Update
 
     public void update(Predicate<Row> condition, HashMap<String, Object> changes) {
-        for (Row row : this.rows) {
-            if(condition.test(row)) {
-                for(Column column : this.columns) {
-                    String columnName = column.getName();
-                    if (changes.containsKey(columnName)) row.setValue(columnName, changes.get(columnName));
-                }
+
+        for (int index : getIndicesOfRowsWhere(condition)) {
+            Row row = this.rows.get(index);
+            for (Map.Entry<String, Object> entry : changes.entrySet()) {
+                row.setValue(entry.getKey(), entry.getValue());
             }
         }
+
     }
 
     public void update(HashMap<String, Object> changes) {
@@ -176,8 +170,22 @@ public class Table {
         this.rows.clear();
     }
 
+    // Helper
+
     public boolean isEmpty() {
         return (this.columns.isEmpty() && this.rows.isEmpty());
+    }
+
+    private ArrayList<Integer> getIndicesOfRowsWhere(Predicate<Row> condition) {
+
+        ArrayList<Integer> indices = new ArrayList<>();
+
+        for(int i = 0; i < this.rows.size(); i++) {
+            if (condition.test(this.rows.get(i))) {
+                indices.add(i);
+            }
+        }
+        return indices;
     }
 
     // To String
