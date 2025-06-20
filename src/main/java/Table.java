@@ -17,7 +17,7 @@ public class Table {
 
     public Table() {this.name = "";}
 
-    // Getter
+    // Getters
 
     public String getName() { return this.name; }
 
@@ -117,6 +117,10 @@ public class Table {
         return result;
     }
 
+    public Table select() {
+        return new Table();
+    }
+
     public Table selectDistinct(String ... columnNames) {
         Table selected = this.select(columnNames);
 
@@ -170,25 +174,24 @@ public class Table {
         this.rows.clear();
     }
 
-    // Helper
 
-    public boolean isEmpty() {
-        return (this.columns.isEmpty() && this.rows.isEmpty());
+
+    // Overridden
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || !(obj instanceof Table)) return false;
+
+        Table other = (Table) obj;
+
+        if(!this.columns.equals(other.getColumns())) return false;
+
+        if(!this.rows.equals(other.selectAll())) return false;
+
+
+        return true;
     }
-
-    private ArrayList<Integer> getIndicesOfRowsWhere(Predicate<Row> condition) {
-
-        ArrayList<Integer> indices = new ArrayList<>();
-
-        for(int i = 0; i < this.rows.size(); i++) {
-            if (condition.test(this.rows.get(i))) {
-                indices.add(i);
-            }
-        }
-        return indices;
-    }
-
-    // To String
 
     @Override
     public String toString() {
@@ -215,6 +218,25 @@ public class Table {
         }
 
         return "";
+
+    }
+
+    // Helper
+
+    public boolean isEmpty() {
+        return (this.columns.isEmpty() && this.rows.isEmpty());
+    }
+
+    public ArrayList<Integer> getIndicesOfRowsWhere(Predicate<Row> condition) {
+
+        ArrayList<Integer> indices = new ArrayList<>();
+
+        for(int i = 0; i < this.rows.size(); i++) {
+            if (condition.test(this.rows.get(i))) {
+                indices.add(i);
+            }
+        }
+        return indices;
 
     }
 
