@@ -11,6 +11,10 @@ public class Row {
     }
 
     public Object getValue(String columnName) {
+        if (!data.containsKey(columnName)) {
+            throw new IllegalArgumentException("Column '" + columnName + "' does not exist in this row.");
+        }
+
         return this.data.get(columnName);
     }
 
@@ -26,5 +30,6 @@ public class Row {
         Row other = (Row) obj;
         return this.data.equals(other.getValues()); // compare map contents
     }
+
 
 }
