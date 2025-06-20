@@ -16,4 +16,12 @@ public class Column {
         return this.type;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || !(obj instanceof Column)) return false;
+
+        Column other = (Column) obj;
+        return this.name == other.getName() && this.type == other.getType(); // compare map contents
+    }
 }
